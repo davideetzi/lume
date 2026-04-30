@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lume-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lume
+      POSTGRES_PASSWORD: lume_dev_password
+      POSTGRES_DB: lume_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - lume_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lume -d lume_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  lume_pg_data:
