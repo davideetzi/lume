@@ -4,6 +4,10 @@ import { requireConsent } from "@/lib/auth-guards";
 import { getOrCreateActiveSession } from "@/server/sessions";
 import { TASKS, type TaskCode } from "@/lib/tasks/catalog";
 import { MatrixTask } from "@/components/tasks/matrix/matrix-task";
+import { SeriesTask } from "@/components/tasks/series/series-task";
+import { DigitSpanTask } from "@/components/tasks/digit-span/digit-span-task";
+import { CorsiTask } from "@/components/tasks/corsi/corsi-task";
+import { NbackTask } from "@/components/tasks/nback/nback-task";
 
 export async function generateMetadata({
   params,
@@ -54,13 +58,15 @@ function TaskRouter({
 }) {
   switch (taskCode) {
     case "matrix":
-      return (
-        <MatrixTask
-          sessionId={sessionId}
-          taskDef={def}
-          totalTrials={def.blockSize}
-        />
-      );
+      return <MatrixTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
+    case "series":
+      return <SeriesTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
+    case "digit_span_back":
+      return <DigitSpanTask sessionId={sessionId} taskDef={def} />;
+    case "corsi":
+      return <CorsiTask sessionId={sessionId} taskDef={def} />;
+    case "nback":
+      return <NbackTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
     default:
       return <ComingSoon code={taskCode} />;
   }
