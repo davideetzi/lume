@@ -8,6 +8,10 @@ import { SeriesTask } from "@/components/tasks/series/series-task";
 import { DigitSpanTask } from "@/components/tasks/digit-span/digit-span-task";
 import { CorsiTask } from "@/components/tasks/corsi/corsi-task";
 import { NbackTask } from "@/components/tasks/nback/nback-task";
+import { SymbolMatchTask } from "@/components/tasks/symbol-match/symbol-match-task";
+import { ChoiceRtTask } from "@/components/tasks/choice-rt/choice-rt-task";
+import { MentalRotationTask } from "@/components/tasks/mental-rotation/mental-rotation-task";
+import { PaperFoldingTask } from "@/components/tasks/paper-folding/paper-folding-task";
 
 export async function generateMetadata({
   params,
@@ -67,6 +71,14 @@ function TaskRouter({
       return <CorsiTask sessionId={sessionId} taskDef={def} />;
     case "nback":
       return <NbackTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
+    case "symbol_match":
+      return <SymbolMatchTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
+    case "choice_rt":
+      return <ChoiceRtTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
+    case "mental_rotation":
+      return <MentalRotationTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
+    case "paper_folding":
+      return <PaperFoldingTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
     default:
       return <ComingSoon code={taskCode} />;
   }
