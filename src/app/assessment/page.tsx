@@ -1,8 +1,11 @@
 import { PageShell } from "@/components/ui/page-shell";
+import { requireConsent } from "@/lib/auth-guards";
 
 export const metadata = { title: "La tua sessione" };
 
-export default function AssessmentHubPage() {
+export default async function AssessmentHubPage() {
+  await requireConsent();
+
   return (
     <PageShell
       title="La tua sessione"

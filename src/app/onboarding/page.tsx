@@ -1,9 +1,12 @@
-import { PageShell } from "@/components/ui/page-shell";
 import Link from "next/link";
+import { PageShell } from "@/components/ui/page-shell";
+import { requireConsent } from "@/lib/auth-guards";
 
 export const metadata = { title: "Come funziona" };
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  await requireConsent();
+
   return (
     <PageShell
       title="Come funziona"
@@ -48,10 +51,10 @@ export default function OnboardingPage() {
         </section>
 
         <Link
-          href="/signup"
+          href="/assessment"
           className="inline-flex rounded-md bg-navy px-6 py-3 text-base font-medium text-white hover:bg-navy-soft"
         >
-          Crea il tuo accesso
+          Vai alla sessione
         </Link>
       </div>
     </PageShell>

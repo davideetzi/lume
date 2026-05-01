@@ -1,17 +1,30 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { PageShell } from "@/components/ui/page-shell";
+import { SigninForm } from "@/components/auth/signin-form";
+import { auth } from "@/auth";
 
 export const metadata = { title: "Accedi" };
 
-export default function SigninPage() {
+export default async function SigninPage() {
+  const session = await auth();
+  if (session?.user) {
+    redirect("/assessment");
+  }
   return (
     <PageShell
       title="Accedi"
       intro="Bentornato. Il tuo profilo Lume ti aspetta dove l'hai lasciato."
       maxWidth="sm"
     >
-      <div className="rounded-lg border border-border bg-surface-soft p-8 text-foreground-muted">
-        Form di accesso, in arrivo nella sessione 2.
-      </div>
+      <SigninForm />
+      <p className="mt-8 text-sm text-foreground-muted">
+        Non hai ancora un account?{" "}
+        <Link href="/signup" className="underline hover:text-navy">
+          Crealo qui
+        </Link>
+        .
+      </p>
     </PageShell>
   );
 }

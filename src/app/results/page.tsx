@@ -1,8 +1,10 @@
 import { PageShell } from "@/components/ui/page-shell";
+import { requireConsent } from "@/lib/auth-guards";
 
 export const metadata = { title: "Le tue restituzioni" };
 
-export default function ResultsIndexPage() {
+export default async function ResultsIndexPage() {
+  await requireConsent();
   return (
     <PageShell
       title="Le tue restituzioni"

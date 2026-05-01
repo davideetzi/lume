@@ -2,23 +2,13 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
 import { prisma } from "@/lib/db";
-
-// Configurazione skeleton. Il flusso completo (signup con bcrypt, magic link
-// email, validazione zod, onboarding) viene cablato nella sessione 2.
-const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-});
+import { signinSchema } from "@/lib/auth-schemas";
+import { authConfig } from "@/auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/signin",
-    newUser: "/onboarding",
-  },
   providers: [
     Credentials({
       name: "Email e password",
@@ -27,24 +17,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(raw) {
-        const parsed = credentialsSchema.safeParse(raw);
+        const parsed = signinSchema.safeParse(raw);
         if (!parsed.success) return null;
-        const { email, password } = parsed.data;
+        const email = parsed.data.email.toLowerCase().trim();
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.passwordHash) return null;
-        const ok = await bcrypt.compare(password, user.passwordHash);
+        const ok = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!ok) return null;
         return { id: user.id, email: user.email, name: user.name ?? null };
       },
     }),
-    // Email magic link verra abilitato in sessione 2 con SMTP configurato.
+    // Email magic link verra abilitato quando avremo SMTP (Resend).
   ],
-  callbacks: {
-    session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-      }
-      return session;
-    },
-  },
 });
