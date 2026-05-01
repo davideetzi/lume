@@ -12,6 +12,16 @@ import { SymbolMatchTask } from "@/components/tasks/symbol-match/symbol-match-ta
 import { ChoiceRtTask } from "@/components/tasks/choice-rt/choice-rt-task";
 import { MentalRotationTask } from "@/components/tasks/mental-rotation/mental-rotation-task";
 import { PaperFoldingTask } from "@/components/tasks/paper-folding/paper-folding-task";
+import { VocabularyTask } from "@/components/tasks/vocabulary/vocabulary-task";
+import { VerbalInferenceTask } from "@/components/tasks/verbal-inference/verbal-inference-task";
+import {
+  loadVocabularyBank,
+  selectVocabItems,
+} from "@/lib/items/vocabulary";
+import {
+  loadVerbalInferenceBank,
+  selectVerbalItems,
+} from "@/lib/items/verbal-inference";
 
 export async function generateMetadata({
   params,
@@ -38,6 +48,39 @@ export default async function TaskPage({
   const ti = session.taskInstances.find((t) => t.taskCode === taskCode);
   if (ti?.status === "completed") {
     redirect("/assessment");
+  }
+
+  // Tasks Gc richiedono caricamento item bank lato server
+  if (taskCode === "vocabulary") {
+    const bank = await loadVocabularyBank();
+    const items = selectVocabItems(
+      bank,
+      `${session.id}::vocabulary`,
+      def.blockSize ?? 30,
+    );
+    return (
+      <PageShell title={def.title} maxWidth="md">
+        <VocabularyTask sessionId={session.id} taskDef={def} items={items} />
+      </PageShell>
+    );
+  }
+
+  if (taskCode === "verbal_inference") {
+    const bank = await loadVerbalInferenceBank();
+    const items = selectVerbalItems(
+      bank,
+      `${session.id}::verbal_inference`,
+      def.blockSize ?? 30,
+    );
+    return (
+      <PageShell title={def.title} maxWidth="md">
+        <VerbalInferenceTask
+          sessionId={session.id}
+          taskDef={def}
+          items={items}
+        />
+      </PageShell>
+    );
   }
 
   return (
@@ -80,18 +123,6 @@ function TaskRouter({
     case "paper_folding":
       return <PaperFoldingTask sessionId={sessionId} taskDef={def} totalTrials={def.blockSize} />;
     default:
-      return <ComingSoon code={taskCode} />;
+      return null;
   }
-}
-
-function ComingSoon({ code }: { code: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface-soft p-8 text-foreground-muted">
-      <p>
-        Questa attività verrà implementata nelle prossime sessioni di
-        sviluppo. Codice task:{" "}
-        <code className="font-mono text-sm">{code}</code>.
-      </p>
-    </div>
-  );
 }
