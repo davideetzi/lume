@@ -131,6 +131,7 @@ model AssessmentSession {
   qcFlags           Json?           // motivi del fallimento QC
 
   trials            Trial[]
+  taskInstances     TaskInstance[]
   factorScores      FactorScore[]
   compositeScore    CompositeScore?
 
@@ -138,6 +139,31 @@ model AssessmentSession {
 
   @@index([userId, startedAt])
   @@index([status])
+}
+
+enum TaskStatus {
+  not_started
+  in_progress
+  completed
+  skipped
+}
+
+model TaskInstance {
+  id           String     @id @default(cuid())
+  sessionId    String
+  taskCode     String     // matrix, series, digit_span_back, corsi, nback, symbol_match, choice_rt, mental_rotation, paper_folding, vocabulary, verbal_inference
+  status       TaskStatus @default(not_started)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  // raw score sintetico per la singola istanza (interpretazione dipende dal task)
+  rawScore     Float?
+  // metadati addizionali (es. span massimo raggiunto, d-prime, accuracy)
+  details      Json?
+
+  session      AssessmentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, taskCode])
+  @@index([sessionId, status])
 }
 
 model Trial {
