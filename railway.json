@@ -5,7 +5,7 @@
     "buildCommand": "npx prisma generate && npm run build"
   },
   "deploy": {
-    "startCommand": "bash -c 'npx prisma migrate deploy && npm run start -- -p $PORT'",
+    "startCommand": "bash -c 'npx prisma migrate deploy && npx prisma db seed && npm run start -- -p $PORT'",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5,
     "healthcheckPath": "/",

@@ -50,6 +50,10 @@ function Block({
   const correctRef = useRef(0);
   const presentedAtRef = useRef(new Date());
   const startedRef = useRef(false);
+
+  if (items.length === 0) {
+    return <EmptyBankNotice />;
+  }
   const item = items[idx]!;
 
   useEffect(() => {
@@ -139,6 +143,18 @@ function Block({
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+function EmptyBankNotice() {
+  return (
+    <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-6 text-sm text-yellow-900">
+      <p className="font-medium">Item bank temporaneamente non disponibile.</p>
+      <p className="mt-2">
+        Riprova tra qualche minuto. Se il problema persiste, contatta il
+        supporto.
+      </p>
     </div>
   );
 }
